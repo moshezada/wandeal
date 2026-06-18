@@ -1,0 +1,22 @@
+# Codemagic CI — בונה קובץ .aab של Wandeal ל-Google Play, בענן, בלי התקנות מקומיות.
+# שימוש: העלה את תיקיית flutter-app ל-GitHub → ב-codemagic.io חבר את ה-repo → הרץ את ה-workflow הזה.
+workflows:
+  wandeal-android:
+    name: Wandeal Android (AAB)
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: יצירת תיקיות פלטפורמה (android/ios) סביב הקוד
+        script: |
+          flutter create . --platforms=android,ios --org com.wandeal --project-name traveldeals
+      - name: התקנת חבילות
+        script: flutter pub get
+      - name: בדיקת תקינות הקוד
+        script: flutter analyze || true
+      - name: בניית App Bundle ל-Play
+        script: flutter build appbundle --release
+    artifacts:
+      - build/**/outputs/bundle/**/*.aab
+      - build/**/outputs/**/mapping.txt
+    # להפצה אוטומטית ל-Play בעתיד אפשר להוסיף כאן publishing → google_play
